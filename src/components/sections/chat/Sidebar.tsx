@@ -53,7 +53,7 @@ export function Sidebar({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 shadow-md shadow-sky-500/20">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-md shadow-sky-500/20">
             <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -210,7 +210,7 @@ function ConversationRow({
         {isGroup ? (
           <div
             className={cn(
-              "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-400 to-slate-600 shadow-sm",
+              "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-slate-400 to-slate-600 shadow-sm",
               active && "ring-2 ring-primary/30",
             )}
           >

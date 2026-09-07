@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Send, Smile } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState, useRef, useEffect } from "react";
+import { Send, Smile } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MessageInputProps {
   onSend: (text: string) => void;
@@ -10,10 +10,27 @@ interface MessageInputProps {
   onTyping?: () => void;
 }
 
-const EMOJIS = ['😀', '😂', '😊', '👍', '❤️', '🎉', '🔥', '👏', '🙏', '😎', '🤔', '👀'];
+const EMOJIS = [
+  "😀",
+  "😂",
+  "😊",
+  "👍",
+  "❤️",
+  "🎉",
+  "🔥",
+  "👏",
+  "🙏",
+  "😎",
+  "🤔",
+  "👀",
+];
 
-export function MessageInput({ onSend, disabled, onTyping }: MessageInputProps) {
-  const [text, setText] = useState('');
+export function MessageInput({
+  onSend,
+  disabled,
+  onTyping,
+}: MessageInputProps) {
+  const [text, setText] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const emojiRef = useRef<HTMLDivElement>(null);
@@ -21,8 +38,8 @@ export function MessageInput({ onSend, disabled, onTyping }: MessageInputProps) 
   function autoResize() {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = '0px';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    el.style.height = "0px";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
   }
 
   useEffect(() => {
@@ -35,21 +52,21 @@ export function MessageInput({ onSend, disabled, onTyping }: MessageInputProps) 
         setShowEmoji(false);
       }
     }
-    if (showEmoji) document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    if (showEmoji) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [showEmoji]);
 
   function handleSubmit() {
     const trimmed = text.trim();
     if (!trimmed || disabled) return;
     onSend(trimmed);
-    setText('');
+    setText("");
     setShowEmoji(false);
     requestAnimationFrame(() => textareaRef.current?.focus());
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
@@ -89,8 +106,10 @@ export function MessageInput({ onSend, disabled, onTyping }: MessageInputProps) 
           <button
             onClick={() => setShowEmoji((s) => !s)}
             className={cn(
-              'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors',
-              showEmoji ? 'bg-secondary text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+              showEmoji
+                ? "bg-secondary text-primary"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
             )}
           >
             <Smile className="h-5 w-5" />
@@ -105,7 +124,7 @@ export function MessageInput({ onSend, disabled, onTyping }: MessageInputProps) 
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             rows={1}
-            className="max-h-[120px] flex-1 resize-none bg-transparent text-sm leading-relaxed outline-none placeholder:text-muted-foreground"
+            className="max-h-30 flex-1 resize-none bg-transparent text-sm leading-relaxed outline-none placeholder:text-muted-foreground"
             disabled={disabled}
           />
         </div>
@@ -113,7 +132,7 @@ export function MessageInput({ onSend, disabled, onTyping }: MessageInputProps) 
         <button
           onClick={handleSubmit}
           disabled={disabled || !text.trim()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-sky-500 to-cyan-600 text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
           <Send className="h-5 w-5" />
         </button>

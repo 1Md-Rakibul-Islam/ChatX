@@ -3,6 +3,7 @@
 import * as React from "react";
 import { format } from "date-fns";
 import { cva, type VariantProps } from "class-variance-authority";
+import { CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
 
@@ -15,7 +16,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import Icon from "../icons/Icon";
 
 const datePickerVariants = cva(
   "h-[48px] w-full rounded-lg border px-3 text-sm flex items-center justify-between",
@@ -95,7 +95,7 @@ function DatePickerField({
             )}
           >
             {date ? format(date, "PPP") : placeholder}
-            <Icon name="watch" className="size-4" />
+            <CalendarDays className="size-4" />
           </Button>
         </PopoverTrigger>
 

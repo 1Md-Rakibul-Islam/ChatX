@@ -52,7 +52,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-sky-50 via-white to-cyan-50 px-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-sky-50 via-white to-cyan-50 px-4">
       <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-sky-200/40 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-cyan-200/40 blur-3xl" />
       <div className="pointer-events-none absolute left-1/2 top-1/4 h-64 w-64 -translate-x-1/2 rounded-full bg-teal-100/30 blur-3xl" />
@@ -60,7 +60,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       <div className="relative z-10 grid w-full max-w-5xl gap-8 lg:grid-cols-2 lg:items-center">
         <div className="hidden flex-col justify-center gap-6 p-8 lg:flex">
           <div className="flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
               <MessageCircle className="h-7 w-7 text-white" />
             </div>
             <span className="text-3xl font-bold tracking-tight text-slate-900">
@@ -70,7 +70,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-900 lg:text-5xl">
             Conversations that
             <br />
-            <span className="bg-gradient-to-r from-sky-500 to-cyan-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-sky-500 to-cyan-600 bg-clip-text text-transparent">
               move at your pace.
             </span>
           </h1>
@@ -99,7 +99,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         <div className="mx-auto w-full max-w-md">
           <div className="rounded-3xl border border-white/60 bg-white/80 p-8 shadow-2xl shadow-sky-500/10 backdrop-blur-xl sm:p-10">
             <div className="mb-8 flex items-center gap-3 lg:hidden">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
                 <MessageCircle className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold tracking-tight text-slate-900">
@@ -186,7 +186,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 py-3.5 font-semibold text-white shadow-lg shadow-sky-500/25 transition-all hover:shadow-xl hover:shadow-sky-500/30 hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-sky-500 to-cyan-600 py-3.5 font-semibold text-white shadow-lg shadow-sky-500/25 transition-all hover:shadow-xl hover:shadow-sky-500/30 hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? (
                   <>

@@ -27,7 +27,7 @@ export const useAuthStore = create<TAuthStore>()(
                 set({
                     user: {
                         _id: foundUser.id,
-                        name: foundUser.name,
+                        name: name || foundUser.name,
                         phone: phone,
                     },
                 });

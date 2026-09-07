@@ -1,22 +1,15 @@
 "use client";
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { MessageCircle, Users, ArrowLeft, Search } from "lucide-react";
+import { MessageCircle, Users, Search } from "lucide-react";
 import { Sidebar } from "@/components/sections/chat/Sidebar";
 import { ChatHeader } from "@/components/sections/chat/ChatHeader";
 import { MessageList } from "@/components/sections/chat/MessageList";
 import { MessageInput } from "@/components/sections/chat/MessageInput";
-import { TypingIndicator } from "@/components/sections/chat/TypingIndicator";
 import { NewChatDialog } from "@/components/sections/chat/NewChatDialog";
 import { CreateGroupDialog } from "@/components/sections/chat/CreateGroupDialog";
 import { GroupInfoDialog } from "@/components/sections/chat/GroupInfoDialog";
-import type {
-  TConversation,
-  IMessage,
-  IUser,
-  IGroupConversation,
-  IDirectConversation,
-} from "@/types/chat.interface";
+import type { IMessage, IUser, TConversation } from "@/types/chat.interface";
 import { cn } from "@/lib/utils";
 import {
   getConversations,
@@ -40,7 +33,7 @@ interface ChatAppProps {
 }
 
 export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
-  const [conversations, setConversations] = useState<IDirectConversation[]>([]);
+  const [conversations, setConversations] = useState<TConversation[]>([]);
   const [messagesByConv, setMessagesByConv] = useState<
     Record<string, IMessage[]>
   >({});
@@ -48,8 +41,6 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
   const [unread, setUnread] = useState<Record<string, number>>({});
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [messageError, setMessageError] = useState<string | null>(null);
-  const [loadingConversations, setLoadingConversations] = useState(true);
-  const [convError, setConvError] = useState<string | null>(null);
   const [showNewChat, setShowNewChat] = useState(false);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showGroupInfo, setShowGroupInfo] = useState(false);
@@ -85,8 +76,6 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
 
   // Load conversations on mount
   const loadConversations = useCallback(async () => {
-    setLoadingConversations(true);
-    setConvError(null);
     try {
       const data = await getConversations();
       const sorted = [...data].sort(
@@ -95,11 +84,9 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
       );
       setConversations(sorted);
     } catch (err) {
-      setConvError(
+      setMessageError(
         err instanceof Error ? err.message : "Failed to load conversations",
       );
-    } finally {
-      setLoadingConversations(false);
     }
   }, []);
 
@@ -112,7 +99,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     const socket = connectSocket(token);
     socketRef.current = socket;
 
-    socket.on("message:new", (msg: Message) => {
+    socket.on("message:new", (msg: IMessage) => {
       const convId = msg.conversation;
       setMessagesByConv((prev) => ({
         ...prev,
@@ -147,7 +134,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
       }
     });
 
-    socket.on("conversation:updated", (updatedConv: IConversation) => {
+    socket.on("conversation:updated", (updatedConv: TConversation) => {
       setConversations((prev) => {
         const exists = prev.some((c) => c._id === updatedConv._id);
         if (exists) {
@@ -203,7 +190,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
 
     // Optimistic message
     const tempId = `temp-${Date.now()}`;
-    const optimistic: Message = {
+    const optimistic: IMessage = {
       _id: tempId,
       conversation: convId,
       sender: currentUser._id,
@@ -484,7 +471,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
 function EmptyChatPanel() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-secondary/20 px-6 text-center">
-      <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-sky-500 to-cyan-600 shadow-xl shadow-sky-500/25">
+      <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-xl shadow-sky-500/25">
         <MessageCircle className="h-12 w-12 text-white" />
       </div>
       <h2 className="text-2xl font-bold tracking-tight">Welcome to Pulse</h2>

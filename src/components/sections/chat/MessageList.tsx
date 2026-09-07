@@ -30,6 +30,7 @@ export function MessageList({
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const isPinnedToBottom = useRef(true);
+  const conversationId = messages[0]?.conversation;
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -47,7 +48,7 @@ export function MessageList({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "auto" });
     isPinnedToBottom.current = true;
-  }, [messages[0]?.conversation]);
+  }, [conversationId]);
 
   if (loading) {
     return (
@@ -201,7 +202,7 @@ function MessageBubble({
                 ),
           )}
         >
-          <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+          <p className="whitespace-pre-wrap wrap-break-word">{msg.text}</p>
           <div
             className={cn(
               "mt-0.5 flex items-center gap-1 text-[10px]",

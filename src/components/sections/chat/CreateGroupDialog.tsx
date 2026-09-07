@@ -232,7 +232,7 @@ export function CreateGroupDialog({
             <button
               onClick={() => setStep("name")}
               disabled={selected.length < 2}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 py-3 font-semibold text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-sky-500 to-cyan-600 py-3 font-semibold text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
             >
               Next
               <ChevronRight className="h-5 w-5" />
@@ -241,7 +241,7 @@ export function CreateGroupDialog({
         ) : (
           <div className="p-5">
             <div className="mb-4 flex justify-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/25">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/25">
                 <Users className="h-9 w-9 text-white" />
               </div>
             </div>
@@ -282,7 +282,7 @@ export function CreateGroupDialog({
               <button
                 onClick={handleCreate}
                 disabled={!groupName.trim()}
-                className="flex-[2] rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 py-3 font-semibold text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+                className="flex-2 rounded-xl bg-linear-to-r from-sky-500 to-cyan-600 py-3 font-semibold text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
               >
                 Create group
               </button>

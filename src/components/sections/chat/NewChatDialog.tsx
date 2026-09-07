@@ -176,7 +176,7 @@ export function NewChatDialog({
           <button
             onClick={handleStart}
             disabled={!selected}
-            className="mt-5 w-full rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 py-3 font-semibold text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+            className="mt-5 w-full rounded-xl bg-linear-to-r from-sky-500 to-cyan-600 py-3 font-semibold text-white shadow-md shadow-sky-500/25 transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
           >
             Start conversation
           </button>

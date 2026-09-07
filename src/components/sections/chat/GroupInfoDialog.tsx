@@ -10,7 +10,6 @@ import {
   Edit2,
   Check,
   LogOut,
-  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getInitials } from "@/lib/date-time.utils";
@@ -83,7 +82,7 @@ export function GroupInfoDialog({
           >
             <X className="h-5 w-5" />
           </button>
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/25">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/25">
             <Users className="h-9 w-9 text-white" />
           </div>
           {editingName ? (
