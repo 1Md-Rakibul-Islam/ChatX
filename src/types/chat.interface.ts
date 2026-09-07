@@ -1,13 +1,14 @@
-export interface User {
+export interface IUser {
   _id: string;
   name: string;
   phone: string;
   createdAt?: string;
 }
 
-export interface Participant extends User {}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface IParticipant extends IUser { }
 
-export interface Message {
+export interface IMessage {
   _id: string;
   conversation: string;
   sender: string;
@@ -16,26 +17,26 @@ export interface Message {
   status?: 'sending' | 'sent' | 'delivered' | 'read';
 }
 
-export interface DirectConversation {
+export interface IDirectConversation {
   _id: string;
   type: 'direct';
   lastMessage: { text: string; sender: string; createdAt: string } | Record<string, never>;
   updatedAt: string;
-  participant: Participant | null;
+  participant: IParticipant | null;
 }
 
-export interface GroupConversation {
+export interface IGroupConversation {
   _id: string;
   type: 'group';
   name: string;
   createdBy: string;
   admins: string[];
-  participants: Participant[];
+  participants: IParticipant[];
   lastMessage: { text: string; sender: string; createdAt: string } | Record<string, never>;
   updatedAt: string;
 }
 
-export type Conversation = DirectConversation | GroupConversation;
+export type TConversation = IDirectConversation | IGroupConversation;
 
 export type ConversationListItem = {
   _id: string;
@@ -45,5 +46,5 @@ export type ConversationListItem = {
   display: string;
   subtitle: string;
   avatarType: 'direct' | 'group';
-  raw: Conversation;
+  raw: TConversation;
 };

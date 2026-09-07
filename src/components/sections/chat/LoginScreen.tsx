@@ -12,9 +12,14 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import { LoginFormData, loginSchema } from "./login.schema";
-import { IUser } from "@/types/chat.interface";
+import {
+  loginSchema,
+  type LoginFormData,
+} from "@/components/sections/login/login.schema";
+import { login } from "@/lib/api-client";
+import { saveSession } from "@/lib/storage";
+import type { IUser } from "@/types/chat.interface";
+import { useRouter } from "next/navigation";
 
 interface LoginScreenProps {
   onLogin: (user: IUser, token: string) => void;
@@ -30,11 +35,20 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     defaultValues: { name: "", phone: "" },
   });
   const [apiError, setApiError] = useState<string | null>(null);
+  const router = useRouter();
 
   async function onSubmit(data: LoginFormData) {
     setApiError(null);
     try {
-    } catch (err) {}
+      const res = await login(data.phone, data.name);
+      saveSession(res.token, res.user);
+      onLogin(res.user, res.token);
+      router.push("/");
+    } catch (err) {
+      setApiError(
+        err instanceof Error ? err.message : "Login failed. Please try again.",
+      );
+    }
   }
 
   return (
