@@ -164,7 +164,12 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     setMessageError(null);
     try {
       const res = await getMessages(convId, { limit: 50 });
-      setMessagesByConv((prev) => ({ ...prev, [convId]: res.messages }));
+      // API often returns newest first, so we sort them chronologically (oldest to newest)
+      const sorted = [...res.messages].sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
+      setMessagesByConv((prev) => ({ ...prev, [convId]: sorted }));
     } catch (err) {
       setMessageError(
         err instanceof Error ? err.message : "Failed to load messages",
