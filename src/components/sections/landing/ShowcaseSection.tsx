@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Reveal from "./Reveal";
 import { Check, Circle, Users } from "lucide-react";
