@@ -54,5 +54,6 @@ if (typeof window !== "undefined") {
   // Listen for unauthorized events to automatically log out
   window.addEventListener("auth:unauthorized", () => {
     useAuthStore.getState().logout();
+    window.location.href = "/login";
   });
 }

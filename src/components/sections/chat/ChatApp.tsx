@@ -47,11 +47,13 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     unread,
     incrementUnread,
     clearUnread,
+    showNewChat,
+    setShowNewChat,
+    showCreateGroup,
+    setShowCreateGroup,
   } = useChatStore();
 
   const [messageError, setMessageError] = useState<string | null>(null);
-  const [showNewChat, setShowNewChat] = useState(false);
-  const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showGroupInfo, setShowGroupInfo] = useState(false);
   const [searchableUsers, setSearchableUsers] = useState<IUser[]>([]);
 
@@ -457,7 +459,10 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
             <MessageInput onSend={handleSend} disabled={loadingMessages} />
           </>
         ) : (
-          <EmptyChatPanel />
+          <EmptyChatPanel
+            onNewChat={handleOpenNewChat}
+            onCreateGroup={() => setShowCreateGroup(true)}
+          />
         )}
       </div>
 
@@ -491,7 +496,13 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
   );
 }
 
-function EmptyChatPanel() {
+function EmptyChatPanel({
+  onNewChat,
+  onCreateGroup,
+}: {
+  onNewChat: () => void;
+  onCreateGroup: () => void;
+}) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-secondary/20 px-6 text-center">
       <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-xl shadow-sky-500/25">
@@ -503,14 +514,20 @@ function EmptyChatPanel() {
         chatting.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm">
+        <button
+          onClick={onCreateGroup}
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm transition-colors hover:bg-secondary hover:text-primary cursor-pointer"
+        >
           <Users className="h-4 w-4 text-primary" />
           Create group chats
-        </div>
-        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm">
+        </button>
+        <button
+          onClick={onNewChat}
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm transition-colors hover:bg-secondary hover:text-primary cursor-pointer"
+        >
           <Search className="h-4 w-4 text-primary" />
           Search by name or phone
-        </div>
+        </button>
       </div>
     </div>
   );

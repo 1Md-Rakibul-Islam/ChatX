@@ -2,12 +2,15 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChatApp } from "@/components/sections/chat/ChatApp";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useChatStore } from "@/store/useChatStore";
 
 export default function ChatPage() {
   const { user, token, isRestoring, logout } = useAuthStore();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // If we've finished restoring and there is no valid session, redirect to login
@@ -18,7 +21,9 @@ export default function ChatPage() {
 
   function handleLogout() {
     logout();
-    router.push("/login");
+    queryClient.clear();
+    useChatStore.getState().reset();
+    window.location.href = "/login";
   }
 
   // Show a loading state while restoring session or before redirecting

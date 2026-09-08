@@ -187,18 +187,22 @@ function MessageBubble({
         <div
           className={cn(
             "relative px-3.5 py-2.5 text-sm leading-relaxed shadow-sm",
-            isOwn ? "chat-bubble-out" : "chat-bubble-in",
+            isOwn 
+              ? "bg-chat-bubble-out text-chat-bubble-out-fg" 
+              : "bg-chat-bubble-in text-chat-bubble-in-fg",
             // Rounded corners with grouping
             isOwn
               ? cn(
-                  "rounded-2xl rounded-br-md",
-                  groupedTop && "rounded-br-2xl",
-                  groupedBottom && "rounded-tr-md",
+                  "rounded-2xl",
+                  groupedTop && "rounded-tr-[4px]",
+                  groupedBottom && "rounded-br-[4px]",
+                  !groupedBottom && "rounded-br-none"
                 )
               : cn(
-                  "rounded-2xl rounded-bl-md",
-                  groupedTop && "rounded-bl-2xl",
-                  groupedBottom && "rounded-tl-md",
+                  "rounded-2xl",
+                  groupedTop && "rounded-tl-[4px]",
+                  groupedBottom && "rounded-bl-[4px]",
+                  !groupedBottom && "rounded-bl-none"
                 ),
           )}
         >
