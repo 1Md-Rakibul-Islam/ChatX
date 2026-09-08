@@ -64,9 +64,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **React Hook Form** — Form management
 - **Zod** — Schema validation
 - **date-fns** — Date manipulation and formatting
-- **React Quill** — Rich text editor
 - **React Day Picker** — Date picker
-- **React Toastify** — Toast notifications
 - **ESLint** — Code linting
 
 ## Getting Started
