@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, Menu, MessageCircle, Moon, Sun, X } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -16,6 +16,12 @@ const NAV_ITEMS = [
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
@@ -31,7 +37,7 @@ export function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          {NAV_ITEMS?.map((item) => (
+          {NAV_ITEMS.map((item) => (
             <Link
               key={item.label}
               href={item.href}
@@ -46,11 +52,16 @@ export function Navbar() {
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:text-foreground"
-            aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
+            aria-label="Toggle theme"
+            suppressHydrationWarning
           >
-            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            {!mounted ? (
+              <Sun size={16} />
+            ) : theme === "dark" ? (
+              <Moon size={16} />
+            ) : (
+              <Sun size={16} />
+            )}
           </button>
           <Link
             href="/chat"
