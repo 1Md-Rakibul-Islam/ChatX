@@ -8,15 +8,17 @@ import HowItWorks from "@/components/sections/landing/HowItWorks";
 
 function App() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
       <Navbar />
-      <HeroSection />
-      <FeaturesSection />
-      <ShowcaseSection />
-      <HowItWorks />
-      <CTASection />
+      <main className="min-h-screen bg-background text-foreground">
+        <HeroSection />
+        <FeaturesSection />
+        <ShowcaseSection />
+        <HowItWorks />
+        <CTASection />
+      </main>
       <Footer />
-    </div>
+    </>
   );
 }
 

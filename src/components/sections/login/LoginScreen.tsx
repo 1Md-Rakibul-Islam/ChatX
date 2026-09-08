@@ -79,7 +79,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               { icon: "⚡", label: "Real-time delivery" },
               { icon: "👥", label: "Group conversations" },
               { icon: "🔒", label: "Secure & simple" },
-            ].map((f) => (
+            ]?.map((f) => (
               <div
                 key={f.label}
                 className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-4 py-2 text-sm font-medium text-slate-700 backdrop-blur-sm"

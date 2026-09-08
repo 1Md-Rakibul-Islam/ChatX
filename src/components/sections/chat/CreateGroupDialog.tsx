@@ -95,7 +95,7 @@ export function CreateGroupDialog({
     if (groupName.trim() && selected.length >= 2) {
       onCreate(
         groupName.trim(),
-        selected.map((u) => u._id),
+        selected?.map((u) => u._id),
       );
       handleClose();
     }
@@ -136,7 +136,7 @@ export function CreateGroupDialog({
           <div className="p-5">
             {selected.length > 0 && (
               <div className="mb-4 flex flex-wrap gap-2">
-                {selected.map((u) => (
+                {selected?.map((u) => (
                   <div
                     key={u._id}
                     className="flex items-center gap-1.5 rounded-full bg-primary/10 py-1 pl-1 pr-2.5"
@@ -184,7 +184,7 @@ export function CreateGroupDialog({
                 </p>
               ) : (
                 <ul className="space-y-1">
-                  {filtered.map((u) => {
+                  {filtered?.map((u) => {
                     const isSelected = selected.some((p) => p._id === u._id);
                     return (
                       <li key={u._id}>
@@ -261,7 +261,7 @@ export function CreateGroupDialog({
                 {selected.length + 1} members (including you)
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {selected.map((u) => (
+                {selected?.map((u) => (
                   <span
                     key={u._id}
                     className="rounded-full bg-card px-2.5 py-1 text-xs font-medium"

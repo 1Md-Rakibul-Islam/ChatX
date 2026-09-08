@@ -4,9 +4,9 @@ A real-time 1-to-1 and group chat application with a polished, creative landing 
 
 ## Live Demo
 
-- **Landing Page:** https://chatx-weld.vercel.app/
-- **Login Page:** https://chatx-weld.vercel.app/login
-- **Chat Application:** https://chatx-weld.vercel.app/chat
+- **Landing Page:** https://chatx-bd.netlify.app/
+- **Login Page:** https://chatx-bd.netlify.app/login
+- **Chat Application:** https://chatx-bd.netlify.app/chat
 - **API Documentation:** https://github.com/1Md-Rakibul-Islam/ChatX/tree/main/docs/API-DOCUMENTATION.md
 
 ## Getting Started Local Server
@@ -50,11 +50,24 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Tech Stack
 
-- **React 18** + **TypeScript**
-- **Vite** — build tool and dev server
-- **Tailwind CSS** — styling
-- **lucide-react** — icons
-- **Socket.io** — real-time messaging (Part 1)
+- **Next.js 16.2.3** — React framework, routing, and application architecture
+- **React 18.3.1** — UI library
+- **TypeScript 5** — Type-safe development
+- **Tailwind CSS 4** — Utility-first styling
+- **shadcn/ui** — UI components
+- **Radix UI** — Accessible UI primitives
+- **Lucide React** — Icons
+- **Zustand** — Client-side state management
+- **TanStack Query** — Server-state management and data fetching
+- **Axios** — HTTP client
+- **Socket.io Client** — Real-time messaging
+- **React Hook Form** — Form management
+- **Zod** — Schema validation
+- **date-fns** — Date manipulation and formatting
+- **React Quill** — Rich text editor
+- **React Day Picker** — Date picker
+- **React Toastify** — Toast notifications
+- **ESLint** — Code linting
 
 ## Getting Started
 

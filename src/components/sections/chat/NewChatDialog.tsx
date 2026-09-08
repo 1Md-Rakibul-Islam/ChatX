@@ -134,7 +134,7 @@ export function NewChatDialog({
               </div>
             ) : (
               <ul className="space-y-1">
-                {filtered.map((u) => (
+                {filtered?.map((u) => (
                   <li key={u._id}>
                     <button
                       onClick={() => setSelected(u)}

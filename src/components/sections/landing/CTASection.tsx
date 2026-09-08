@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const CTASection = () => {
   return (
@@ -15,12 +16,12 @@ const CTASection = () => {
           when people{" "}
           <em className="font-semibold italic text-primary">connect.</em>
         </h2>
-        <a
-          href="#experience"
+        <Link
+          href="/chat"
           className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 font-medium text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
         >
           Open ChatX <ArrowRight size={16} />
-        </a>
+        </Link>
       </div>
     </section>
   );

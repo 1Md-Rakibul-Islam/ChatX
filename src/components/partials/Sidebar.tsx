@@ -145,7 +145,7 @@ export function Sidebar({
           </div>
         ) : (
           <ul className="px-2">
-            {filtered.map((c) => (
+            {filtered?.map((c) => (
               <ConversationRow
                 key={c._id}
                 conversation={c}

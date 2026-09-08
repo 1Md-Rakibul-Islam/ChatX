@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { getInitials, formatChatListTime } from "@/lib/date-time.utils";
 import type { TConversation, IUser } from "@/types/chat.interface";
 import { avatarColor } from "@/lib/avatar.utils";
+import Link from "next/link";
 
 interface SidebarProps {
   conversations: TConversation[];
@@ -52,19 +53,19 @@ export function Sidebar({
     <div className="flex h-full flex-col bg-card">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-md shadow-sky-500/20">
+        <Link href="/#hero-section" className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-md shadow-sky-500/20">
             <MessageCircle className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold leading-none tracking-tight">
-              Pulse
-            </h1>
+          </span>
+          <span className="block">
+            <span className="text-lg font-bold leading-none tracking-tight">
+              Chat <span className="text-primary">X</span>
+            </span>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Conversations
             </p>
-          </div>
-        </div>
+          </span>
+        </Link>
         <div className="flex items-center gap-1">
           <button
             onClick={onNewChat}
@@ -145,7 +146,7 @@ export function Sidebar({
           </div>
         ) : (
           <ul className="px-2">
-            {filtered.map((c) => (
+            {filtered?.map((c) => (
               <ConversationRow
                 key={c._id}
                 conversation={c}
