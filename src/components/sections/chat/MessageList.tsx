@@ -187,8 +187,8 @@ function MessageBubble({
         <div
           className={cn(
             "relative px-3.5 py-2.5 text-sm leading-relaxed shadow-sm",
-            isOwn 
-              ? "bg-chat-bubble-out text-chat-bubble-out-fg" 
+            isOwn
+              ? "bg-chat-bubble-out text-chat-bubble-out-fg"
               : "bg-chat-bubble-in text-chat-bubble-in-fg",
             // Rounded corners with grouping
             isOwn
@@ -196,13 +196,13 @@ function MessageBubble({
                   "rounded-2xl",
                   groupedTop && "rounded-tr-[4px]",
                   groupedBottom && "rounded-br-[4px]",
-                  !groupedBottom && "rounded-br-none"
+                  !groupedBottom && "rounded-br-none",
                 )
               : cn(
                   "rounded-2xl",
                   groupedTop && "rounded-tl-[4px]",
                   groupedBottom && "rounded-bl-[4px]",
-                  !groupedBottom && "rounded-bl-none"
+                  !groupedBottom && "rounded-bl-none",
                 ),
           )}
         >

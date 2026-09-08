@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowRight, Menu, MessageCircle, Moon, Sun, X } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/#hero-section" },
@@ -14,15 +15,11 @@ const NAV_ITEMS = [
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
+  const { theme, setTheme } = useTheme();
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container mx-auto flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/#hero-section"
           className="flex items-center gap-2 text-lg font-semibold tracking-tight"
@@ -47,11 +44,13 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setDark((d) => !d)}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:text-foreground"
-            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={
+              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
           >
-            {dark ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           <Link
             href="/chat"
