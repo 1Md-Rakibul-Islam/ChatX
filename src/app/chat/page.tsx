@@ -1,36 +1,36 @@
 "use client";
 
-import { LoginScreen } from "@/components/sections/chat/LoginScreen";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ChatApp } from "@/components/sections/chat/ChatApp";
 import { useAuthStore } from "@/store/useAuthStore";
-import type { IUser } from "@/types/chat.interface";
 
-export default function Home() {
-  const { user, token, isRestoring, login, logout } = useAuthStore();
+export default function ChatPage() {
+  const { user, token, isRestoring, logout } = useAuthStore();
+  const router = useRouter();
 
-  function handleLogin(loggedInUser: IUser, jwt: string) {
-    login(loggedInUser, jwt);
-  }
+  useEffect(() => {
+    // If we've finished restoring and there is no valid session, redirect to login
+    if (!isRestoring && (!user || !token)) {
+      router.push("/login");
+    }
+  }, [user, token, isRestoring, router]);
 
   function handleLogout() {
     logout();
+    router.push("/login");
   }
 
-  if (isRestoring) {
+  // Show a loading state while restoring session or before redirecting
+  if (isRestoring || !user || !token) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">
-            Restoring your session...
-          </p>
+          <p className="text-sm text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
-  }
-
-  if (!user || !token) {
-    return <LoginScreen onLogin={handleLogin} />;
   }
 
   return <ChatApp currentUser={user} token={token} onLogout={handleLogout} />;

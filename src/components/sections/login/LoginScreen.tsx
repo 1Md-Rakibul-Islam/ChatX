@@ -12,11 +12,15 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import { LoginFormData, loginSchema } from "./login.schema";
+import {
+  loginSchema,
+  type LoginFormData,
+} from "@/components/sections/login/login.schema";
 import { login } from "@/lib/api-client";
 import { saveSession } from "@/lib/storage";
-import { IUser } from "@/types/chat.interface";
+import type { IUser } from "@/types/chat.interface";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface LoginScreenProps {
   onLogin: (user: IUser, token: string) => void;
@@ -36,9 +40,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   async function onSubmit(data: LoginFormData) {
     setApiError(null);
     try {
-      const response = await login(data.phone, data.name);
-      saveSession(response.token, response.user);
-      onLogin(response.user, response.token);
+      const res = await login(data.phone, data.name);
+      saveSession(res.token, res.user);
+      onLogin(res.user, res.token);
     } catch (err) {
       setApiError(
         err instanceof Error ? err.message : "Login failed. Please try again.",
@@ -54,14 +58,14 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
       <div className="relative z-10 grid w-full max-w-5xl gap-8 lg:grid-cols-2 lg:items-center">
         <div className="hidden flex-col justify-center gap-6 p-8 lg:flex">
-          <div className="flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
               <MessageCircle className="h-7 w-7 text-white" />
-            </div>
-            <span className="text-3xl font-bold tracking-tight text-slate-900">
-              Pulse
             </span>
-          </div>
+            <span className="text-3xl font-bold tracking-tight text-slate-900">
+              Chat <span className="text-primary">X</span>
+            </span>
+          </Link>
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-900 lg:text-5xl">
             Conversations that
             <br />
@@ -93,14 +97,14 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
         <div className="mx-auto w-full max-w-md">
           <div className="rounded-3xl border border-white/60 bg-white/80 p-8 shadow-2xl shadow-sky-500/10 backdrop-blur-xl sm:p-10">
-            <div className="mb-8 flex items-center gap-3 lg:hidden">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
+            <Link href="/" className="mb-8 flex items-center gap-3 lg:hidden">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 to-cyan-600 shadow-lg shadow-sky-500/30">
                 <MessageCircle className="h-6 w-6 text-white" />
-              </div>
+              </span>
               <span className="text-2xl font-bold tracking-tight text-slate-900">
                 Pulse
               </span>
-            </div>
+            </Link>
 
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
               Welcome back
