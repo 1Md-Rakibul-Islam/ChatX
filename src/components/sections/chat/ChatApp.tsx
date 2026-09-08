@@ -118,7 +118,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
         (old) => {
           if (!old) return old;
           return old
-            .map((c) =>
+            ?.map((c) =>
               c._id === convId
                 ? {
                     ...c,
@@ -153,7 +153,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
           const exists = old.some((c) => c._id === updatedConv._id);
           if (exists) {
             return old
-              .map((c) => (c._id === updatedConv._id ? updatedConv : c))
+              ?.map((c) => (c._id === updatedConv._id ? updatedConv : c))
               .sort(
                 (a, b) =>
                   new Date(b.updatedAt).getTime() -
@@ -205,7 +205,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
       (old) => {
         if (!old) return old;
         return old
-          .map((c) =>
+          ?.map((c) =>
             c._id === convId
               ? {
                   ...c,
@@ -232,7 +232,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
         QUERY_KEYS.messages(convId),
         (old) => {
           if (!old) return [sent];
-          return old.map((m) =>
+          return old?.map((m) =>
             m._id === tempId ? { ...sent, status: "sent" as const } : m,
           );
         },
@@ -243,7 +243,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
         QUERY_KEYS.messages(convId),
         (old) => {
           if (!old) return old;
-          return old.map((m) =>
+          return old?.map((m) =>
             m._id === tempId ? { ...m, status: "sent" as const } : m,
           );
         },
@@ -324,7 +324,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
         QUERY_KEYS.conversations,
         (old) => {
           if (!old) return old;
-          return old.map((c) => (c._id === updated._id ? updated : c));
+          return old?.map((c) => (c._id === updated._id ? updated : c));
         },
       );
     } catch (err) {
@@ -342,7 +342,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
         QUERY_KEYS.conversations,
         (old) => {
           if (!old) return old;
-          return old.map((c) => (c._id === updated._id ? updated : c));
+          return old?.map((c) => (c._id === updated._id ? updated : c));
         },
       );
     } catch (err) {
@@ -360,7 +360,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
         QUERY_KEYS.conversations,
         (old) => {
           if (!old) return old;
-          return old.map((c) => (c._id === updated._id ? updated : c));
+          return old?.map((c) => (c._id === updated._id ? updated : c));
         },
       );
     } catch (err) {
@@ -378,7 +378,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
         QUERY_KEYS.conversations,
         (old) => {
           if (!old) return old;
-          return old.map((c) => (c._id === updated._id ? updated : c));
+          return old?.map((c) => (c._id === updated._id ? updated : c));
         },
       );
     } catch (err) {

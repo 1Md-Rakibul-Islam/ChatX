@@ -85,7 +85,7 @@ export function MessageInput({
           className="absolute bottom-full left-3 mb-2 rounded-2xl border border-border bg-popover p-2 shadow-xl sm:left-4"
         >
           <div className="grid grid-cols-6 gap-1">
-            {EMOJIS.map((emoji) => (
+            {EMOJIS?.map((emoji) => (
               <button
                 key={emoji}
                 onClick={() => {

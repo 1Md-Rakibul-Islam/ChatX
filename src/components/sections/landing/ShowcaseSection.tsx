@@ -66,7 +66,7 @@ const ShowcaseSection = () => {
                 "Clear message history",
                 "Smart scroll behavior",
                 "Built for real-time",
-              ].map((item) => (
+              ]?.map((item) => (
                 <span key={item} className="flex items-center gap-2">
                   <Check size={16} className="text-success" /> {item}
                 </span>

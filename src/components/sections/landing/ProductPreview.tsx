@@ -124,7 +124,7 @@ export function ProductPreview({ mode }: { mode: DemoMode }) {
               Today
             </span>
           </div>
-          {messages.map((msg) => (
+          {messages?.map((msg) => (
             <div
               key={msg.text}
               className={`mb-3 flex max-w-[80%] items-end gap-2 animate-message-in ${msg.own ? "ml-auto flex-row-reverse" : ""}`}

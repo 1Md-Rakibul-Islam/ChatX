@@ -48,7 +48,7 @@ export function GroupInfoDialog({
   if (!open || !conversation) return null;
 
   const isCurrentUserAdmin = conversation.admins.includes(currentUserId);
-  const memberIds = new Set(conversation.participants.map((p) => p._id));
+  const memberIds = new Set(conversation.participants?.map((p) => p._id));
   const availableToAdd = searchableUsers.filter(
     (u) => !memberIds.has(u._id) && u._id !== currentUserId,
   );
@@ -140,7 +140,7 @@ export function GroupInfoDialog({
                 ) : (
                   <div className="max-h-40 overflow-y-auto scrollbar-thin">
                     <ul className="space-y-1">
-                      {availableToAdd.map((u) => (
+                      {availableToAdd?.map((u) => (
                         <li key={u._id}>
                           <button
                             onClick={() => {
@@ -198,7 +198,7 @@ export function GroupInfoDialog({
           </p>
           <div className="max-h-64 overflow-y-auto scrollbar-thin">
             <ul className="space-y-1">
-              {conversation.participants.map((p) => {
+              {conversation.participants?.map((p) => {
                 const isAdmin = conversation.admins.includes(p._id);
                 const isMe = p._id === currentUserId;
                 return (

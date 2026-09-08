@@ -4,7 +4,10 @@ import { Avatar } from "@/components/ui/Avatar";
 
 const HeroSection = () => {
   return (
-    <section id="top" className="relative overflow-hidden py-20 lg:py-28">
+    <section
+      id="hero-section"
+      className="relative overflow-hidden py-20 lg:py-28"
+    >
       <div className="pointer-events-none absolute -right-20 -top-32 h-[480px] w-[480px] rounded-full bg-primary/20 blur-[100px]" />
       <div className="pointer-events-none absolute -bottom-24 -left-16 h-[360px] w-[360px] rounded-full bg-success/15 blur-[90px]" />
 

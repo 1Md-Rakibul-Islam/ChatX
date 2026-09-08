@@ -53,7 +53,7 @@ export function MessageList({
   if (loading) {
     return (
       <div className="flex flex-1 flex-col gap-3 overflow-hidden p-4">
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: 5 })?.map((_, i) => (
           <div
             key={i}
             className={cn(
@@ -105,13 +105,13 @@ export function MessageList({
       className="flex-1 overflow-y-auto scrollbar-thin px-4 py-4"
     >
       <div className="mx-auto flex max-w-3xl flex-col gap-1">
-        {messages.map((msg, i) => {
+        {messages?.map((msg, i) => {
           const isOwn = msg.sender === currentUserId;
           const showDateSeparator = !sameDay(
             lastDate || msg.createdAt,
             msg.createdAt,
           );
-          // eslint-disable-next-line react-hooks/immutability
+
           if (showDateSeparator) lastDate = msg.createdAt;
           const prevMsg = messages[i - 1];
           const nextMsg = messages[i + 1];
