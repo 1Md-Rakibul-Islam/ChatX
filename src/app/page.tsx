@@ -1,49 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { LoginScreen } from "@/components/sections/chat/LoginScreen";
 import { ChatApp } from "@/components/sections/chat/ChatApp";
-import { getCurrentUser } from "@/lib/api-client";
-import { getToken, getStoredUser, clearSession } from "@/lib/storage";
+import { useAuthStore } from "@/store/useAuthStore";
 import type { IUser } from "@/types/chat.interface";
 
 export default function Home() {
-  const [user, setUser] = useState<IUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [restoring, setRestoring] = useState(true);
-
-  useEffect(() => {
-    const storedToken = getToken();
-    const storedUser = getStoredUser<IUser>();
-    if (storedToken && storedUser) {
-      // Verify token is still valid
-      getCurrentUser()
-        .then((freshUser) => {
-          setUser(freshUser);
-          setToken(storedToken);
-        })
-        .catch(() => {
-          clearSession();
-        })
-        .finally(() => setRestoring(false));
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRestoring(false);
-    }
-  }, []);
+  const { user, token, isRestoring, login, logout } = useAuthStore();
 
   function handleLogin(loggedInUser: IUser, jwt: string) {
-    setUser(loggedInUser);
-    setToken(jwt);
+    login(loggedInUser, jwt);
   }
 
   function handleLogout() {
-    clearSession();
-    setUser(null);
-    setToken(null);
+    logout();
   }
 
-  if (restoring) {
+  if (isRestoring) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">

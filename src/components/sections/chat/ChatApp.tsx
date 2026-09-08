@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { MessageCircle, Users, Search } from "lucide-react";
 import { Sidebar } from "@/components/sections/chat/Sidebar";
 import { ChatHeader } from "@/components/sections/chat/ChatHeader";
@@ -12,9 +12,6 @@ import { GroupInfoDialog } from "@/components/sections/chat/GroupInfoDialog";
 import type { IMessage, IUser, TConversation } from "@/types/chat.interface";
 import { cn } from "@/lib/utils";
 import {
-  getConversations,
-  getMessages,
-  sendMessage as apiSendMessage,
   searchUsers,
   startDirectConversation,
   createGroup,
@@ -22,9 +19,17 @@ import {
   removeGroupMember,
   promoteAdmin,
   renameGroup,
+  sendMessage as apiSendMessage,
 } from "@/lib/api-client";
 import { connectSocket, disconnectSocket } from "@/lib/websocket";
 import type { Socket } from "socket.io-client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useChatStore } from "@/store/useChatStore";
+import {
+  useConversations,
+  useMessages,
+  QUERY_KEYS,
+} from "@/hooks/useChatQueries";
 
 interface ChatAppProps {
   currentUser: IUser;
@@ -33,31 +38,47 @@ interface ChatAppProps {
 }
 
 export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
-  const [conversations, setConversations] = useState<TConversation[]>([]);
-  const [messagesByConv, setMessagesByConv] = useState<
-    Record<string, IMessage[]>
-  >({});
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [unread, setUnread] = useState<Record<string, number>>({});
-  const [loadingMessages, setLoadingMessages] = useState(false);
+  const queryClient = useQueryClient();
+  const {
+    activeId,
+    setActiveId,
+    mobileView,
+    setMobileView,
+    unread,
+    incrementUnread,
+    clearUnread,
+  } = useChatStore();
+
   const [messageError, setMessageError] = useState<string | null>(null);
   const [showNewChat, setShowNewChat] = useState(false);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showGroupInfo, setShowGroupInfo] = useState(false);
-  const [mobileView, setMobileView] = useState<"list" | "chat">("list");
   const [searchableUsers, setSearchableUsers] = useState<IUser[]>([]);
 
   const socketRef = useRef<Socket | null>(null);
   const activeIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    activeIdRef.current = activeId;
+  }, [activeId]);
 
-  activeIdRef.current = activeId;
+  // React Query Hooks
+  const { data: conversations = [], refetch: refetchConversations } =
+    useConversations();
+  const {
+    data: activeMessages = [],
+    isLoading: loadingMessages,
+    isError,
+    refetch: refetchMessages,
+  } = useMessages(activeId);
+
+  if (isError && !messageError) {
+    setMessageError("Failed to load messages");
+  }
 
   const activeConv = useMemo(
     () => conversations.find((c) => c._id === activeId) ?? null,
     [conversations, activeId],
   );
-
-  const activeMessages = activeId ? (messagesByConv[activeId] ?? []) : [];
 
   const senderNames = useMemo(() => {
     const map: Record<string, string> = {};
@@ -74,26 +95,6 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     return map;
   }, [conversations, currentUser]);
 
-  // Load conversations on mount
-  const loadConversations = useCallback(async () => {
-    try {
-      const data = await getConversations();
-      const sorted = [...data].sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-      );
-      setConversations(sorted);
-    } catch (err) {
-      setMessageError(
-        err instanceof Error ? err.message : "Failed to load conversations",
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
-
   // Connect socket
   useEffect(() => {
     const socket = connectSocket(token);
@@ -101,99 +102,88 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
 
     socket.on("message:new", (msg: IMessage) => {
       const convId = msg.conversation;
-      setMessagesByConv((prev) => ({
-        ...prev,
-        [convId]: [...(prev[convId] ?? []), msg],
-      }));
 
-      // Update last message + sort
-      setConversations((prev) =>
-        prev
-          .map((c) =>
-            c._id === convId
-              ? {
-                  ...c,
-                  updatedAt: msg.createdAt,
-                  lastMessage: {
-                    text: msg.text,
-                    sender: msg.sender,
-                    createdAt: msg.createdAt,
-                  },
-                }
-              : c,
-          )
-          .sort(
-            (a, b) =>
-              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-          ),
+      // Update messages cache
+      queryClient.setQueryData<IMessage[]>(
+        QUERY_KEYS.messages(convId),
+        (old) => {
+          if (!old) return [msg];
+          return [...old, msg];
+        },
       );
 
-      // Increment unread if not the active conversation
-      if (activeIdRef.current !== convId) {
-        setUnread((prev) => ({ ...prev, [convId]: (prev[convId] ?? 0) + 1 }));
-      }
-    });
-
-    socket.on("conversation:updated", (updatedConv: TConversation) => {
-      setConversations((prev) => {
-        const exists = prev.some((c) => c._id === updatedConv._id);
-        if (exists) {
-          return prev
-            .map((c) => (c._id === updatedConv._id ? updatedConv : c))
+      // Update conversations cache
+      queryClient.setQueryData<TConversation[]>(
+        QUERY_KEYS.conversations,
+        (old) => {
+          if (!old) return old;
+          return old
+            .map((c) =>
+              c._id === convId
+                ? {
+                    ...c,
+                    updatedAt: msg.createdAt,
+                    lastMessage: {
+                      text: msg.text,
+                      sender: msg.sender,
+                      createdAt: msg.createdAt,
+                    },
+                  }
+                : c,
+            )
             .sort(
               (a, b) =>
                 new Date(b.updatedAt).getTime() -
                 new Date(a.updatedAt).getTime(),
             );
-        }
-        return [updatedConv, ...prev].sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-        );
-      });
+        },
+      );
+
+      // Increment unread if not active
+      if (activeIdRef.current !== convId) {
+        incrementUnread(convId);
+      }
+    });
+
+    socket.on("conversation:updated", (updatedConv: TConversation) => {
+      queryClient.setQueryData<TConversation[]>(
+        QUERY_KEYS.conversations,
+        (old) => {
+          if (!old) return [updatedConv];
+          const exists = old.some((c) => c._id === updatedConv._id);
+          if (exists) {
+            return old
+              .map((c) => (c._id === updatedConv._id ? updatedConv : c))
+              .sort(
+                (a, b) =>
+                  new Date(b.updatedAt).getTime() -
+                  new Date(a.updatedAt).getTime(),
+              );
+          }
+          return [updatedConv, ...old].sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          );
+        },
+      );
     });
 
     return () => {
       disconnectSocket();
     };
-  }, [token]);
-
-  // Load messages when selecting a conversation
-  const loadMessages = useCallback(async (convId: string) => {
-    setLoadingMessages(true);
-    setMessageError(null);
-    try {
-      const res = await getMessages(convId, { limit: 50 });
-      // API often returns newest first, so we sort them chronologically (oldest to newest)
-      const sorted = [...res.messages].sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
-      setMessagesByConv((prev) => ({ ...prev, [convId]: sorted }));
-    } catch (err) {
-      setMessageError(
-        err instanceof Error ? err.message : "Failed to load messages",
-      );
-    } finally {
-      setLoadingMessages(false);
-    }
-  }, []);
+  }, [token, queryClient, incrementUnread]);
 
   function handleSelect(id: string) {
     if (id === activeId) return;
     setActiveId(id);
-    setMobileView("chat");
-    setUnread((prev) => ({ ...prev, [id]: 0 }));
-    if (!messagesByConv[id]) {
-      loadMessages(id);
-    }
+    clearUnread(id);
+    setMessageError(null);
   }
 
   async function handleSend(text: string) {
     if (!activeId) return;
     const convId = activeId;
 
-    // Optimistic message
     const tempId = `temp-${Date.now()}`;
     const optimistic: IMessage = {
       _id: tempId,
@@ -203,67 +193,74 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
       createdAt: new Date().toISOString(),
       status: "sending",
     };
-    setMessagesByConv((prev) => ({
-      ...prev,
-      [convId]: [...(prev[convId] ?? []), optimistic],
-    }));
 
-    // Update conversation list preview
-    setConversations((prev) =>
-      prev
-        .map((c) =>
-          c._id === convId
-            ? {
-                ...c,
-                updatedAt: new Date().toISOString(),
-                lastMessage: {
-                  text,
-                  sender: currentUser._id,
-                  createdAt: new Date().toISOString(),
-                },
-              }
-            : c,
-        )
-        .sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-        ),
+    // Optimistically update messages
+    queryClient.setQueryData<IMessage[]>(QUERY_KEYS.messages(convId), (old) => {
+      return [...(old || []), optimistic];
+    });
+
+    // Optimistically update conversations
+    queryClient.setQueryData<TConversation[]>(
+      QUERY_KEYS.conversations,
+      (old) => {
+        if (!old) return old;
+        return old
+          .map((c) =>
+            c._id === convId
+              ? {
+                  ...c,
+                  updatedAt: new Date().toISOString(),
+                  lastMessage: {
+                    text,
+                    sender: currentUser._id,
+                    createdAt: new Date().toISOString(),
+                  },
+                }
+              : c,
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          );
+      },
     );
 
     try {
       const sent = await apiSendMessage(convId, text);
-      // Replace optimistic message with real one
-      setMessagesByConv((prev) => ({
-        ...prev,
-        [convId]: (prev[convId] ?? []).map((m) =>
-          m._id === tempId ? { ...sent, status: "sent" as const } : m,
-        ),
-      }));
+      // Replace optimistic message
+      queryClient.setQueryData<IMessage[]>(
+        QUERY_KEYS.messages(convId),
+        (old) => {
+          if (!old) return [sent];
+          return old.map((m) =>
+            m._id === tempId ? { ...sent, status: "sent" as const } : m,
+          );
+        },
+      );
     } catch (err) {
       // Mark as failed
-      setMessagesByConv((prev) => ({
-        ...prev,
-        [convId]: (prev[convId] ?? []).map((m) =>
-          m._id === tempId ? { ...m, status: "sent" as const } : m,
-        ),
-      }));
+      queryClient.setQueryData<IMessage[]>(
+        QUERY_KEYS.messages(convId),
+        (old) => {
+          if (!old) return old;
+          return old.map((m) =>
+            m._id === tempId ? { ...m, status: "sent" as const } : m,
+          );
+        },
+      );
       setMessageError(
         err instanceof Error ? err.message : "Failed to send message",
       );
     }
   }
 
-  // Load searchable users when dialog opens
   async function handleOpenNewChat() {
     setShowNewChat(true);
     if (searchableUsers.length === 0) {
       try {
-        // Broad search to get all users
         const users = await searchUsers("");
         setSearchableUsers(users.filter((u) => u._id !== currentUser._id));
-      } catch {
-        // ignore — user can type to search
-      }
+      } catch {}
     }
   }
 
@@ -288,8 +285,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
 
     try {
       const res = await startDirectConversation(userId);
-      // Reload conversations to get the full conversation object
-      await loadConversations();
+      await refetchConversations();
       handleSelect(res._id);
       setShowNewChat(false);
     } catch (err) {
@@ -302,15 +298,16 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
   async function handleCreateGroup(name: string, participantIds: string[]) {
     try {
       const group = await createGroup(name, participantIds);
-      setConversations((prev) =>
-        [group, ...prev].sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-        ),
+      queryClient.setQueryData<TConversation[]>(
+        QUERY_KEYS.conversations,
+        (old) => {
+          return [group, ...(old || [])].sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          );
+        },
       );
       setActiveId(group._id);
-      setMobileView("chat");
-      setMessagesByConv((prev) => ({ ...prev, [group._id]: [] }));
       setShowCreateGroup(false);
     } catch (err) {
       setMessageError(
@@ -323,8 +320,12 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     if (!activeConv || activeConv.type !== "group") return;
     try {
       const updated = await renameGroup(activeConv._id, name);
-      setConversations((prev) =>
-        prev.map((c) => (c._id === updated._id ? updated : c)),
+      queryClient.setQueryData<TConversation[]>(
+        QUERY_KEYS.conversations,
+        (old) => {
+          if (!old) return old;
+          return old.map((c) => (c._id === updated._id ? updated : c));
+        },
       );
     } catch (err) {
       setMessageError(
@@ -337,8 +338,12 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     if (!activeConv || activeConv.type !== "group") return;
     try {
       const updated = await addGroupMembers(activeConv._id, [userId]);
-      setConversations((prev) =>
-        prev.map((c) => (c._id === updated._id ? updated : c)),
+      queryClient.setQueryData<TConversation[]>(
+        QUERY_KEYS.conversations,
+        (old) => {
+          if (!old) return old;
+          return old.map((c) => (c._id === updated._id ? updated : c));
+        },
       );
     } catch (err) {
       setMessageError(
@@ -351,8 +356,12 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     if (!activeConv || activeConv.type !== "group") return;
     try {
       const updated = await removeGroupMember(activeConv._id, userId);
-      setConversations((prev) =>
-        prev.map((c) => (c._id === updated._id ? updated : c)),
+      queryClient.setQueryData<TConversation[]>(
+        QUERY_KEYS.conversations,
+        (old) => {
+          if (!old) return old;
+          return old.map((c) => (c._id === updated._id ? updated : c));
+        },
       );
     } catch (err) {
       setMessageError(
@@ -365,8 +374,12 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
     if (!activeConv || activeConv.type !== "group") return;
     try {
       const updated = await promoteAdmin(activeConv._id, userId);
-      setConversations((prev) =>
-        prev.map((c) => (c._id === updated._id ? updated : c)),
+      queryClient.setQueryData<TConversation[]>(
+        QUERY_KEYS.conversations,
+        (old) => {
+          if (!old) return old;
+          return old.map((c) => (c._id === updated._id ? updated : c));
+        },
       );
     } catch (err) {
       setMessageError(
@@ -378,10 +391,15 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
   function handleLeaveGroup() {
     if (!activeConv || activeConv.type !== "group") return;
     handleRemoveMember(currentUser._id);
-    setConversations((prev) => prev.filter((c) => c._id !== activeConv._id));
+    queryClient.setQueryData<TConversation[]>(
+      QUERY_KEYS.conversations,
+      (old) => {
+        if (!old) return old;
+        return old.filter((c) => c._id !== activeConv._id);
+      },
+    );
     setActiveId(null);
     setShowGroupInfo(false);
-    setMobileView("list");
   }
 
   function handleBack() {
@@ -390,7 +408,7 @@ export function ChatApp({ currentUser, token, onLogout }: ChatAppProps) {
 
   function handleRetry() {
     setMessageError(null);
-    if (activeId) loadMessages(activeId);
+    if (activeId) refetchMessages();
   }
 
   return (

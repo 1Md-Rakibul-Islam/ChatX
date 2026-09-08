@@ -4,42 +4,7 @@ import type {
   IMessage,
   IGroupConversation,
 } from '@/types/chat.interface';
-
-const API_BASE = 'https://frontend-task-chatapp.onrender.com/api';
-
-function getToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('pulse_token');
-}
-
-async function apiRequest<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
-  const token = getToken();
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...((options.headers as Record<string, string>) || {}),
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-
-  if (!res.ok) {
-    let message = `Request failed (${res.status})`;
-    try {
-      const body = await res.json();
-      message = body?.error?.message || body?.message || message;
-    } catch {
-      // response body not JSON
-    }
-    throw new Error(message);
-  }
-
-  return res.json() as Promise<T>;
-}
+import { axiosInstance } from './axios';
 
 // --- Auth ---
 
@@ -49,21 +14,20 @@ export interface LoginResponse {
 }
 
 export async function login(phone: string, name: string): Promise<LoginResponse> {
-  return apiRequest<LoginResponse>('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ phone, name }),
-  });
+  const { data } = await axiosInstance.post<LoginResponse>('/auth/login', { phone, name });
+  return data;
 }
 
 export async function getCurrentUser(): Promise<IUser> {
-  return apiRequest<IUser>('/auth/me');
+  const { data } = await axiosInstance.get<IUser>('/auth/me');
+  return data;
 }
 
 // --- Users ---
 
 export async function searchUsers(query: string): Promise<IUser[]> {
-  const qs = new URLSearchParams({ q: query });
-  return apiRequest<IUser[]>(`/users/search?${qs.toString()}`);
+  const { data } = await axiosInstance.get<IUser[]>('/users/search', { params: { q: query } });
+  return data;
 }
 
 // --- Conversations ---
@@ -73,8 +37,8 @@ interface IConversationsResponse {
 }
 
 export async function getConversations(): Promise<TConversation[]> {
-  const res = await apiRequest<IConversationsResponse>('/conversations');
-  return res.data;
+  const { data } = await axiosInstance.get<IConversationsResponse>('/conversations');
+  return data.data;
 }
 
 export async function startDirectConversation(userId: string): Promise<{
@@ -82,10 +46,8 @@ export async function startDirectConversation(userId: string): Promise<{
   participants: string[];
   createdAt: string;
 }> {
-  return apiRequest('/conversations', {
-    method: 'POST',
-    body: JSON.stringify({ userId }),
-  });
+  const { data } = await axiosInstance.post('/conversations', { userId });
+  return data;
 }
 
 // --- Messages ---
@@ -99,23 +61,22 @@ export async function getMessages(
   conversationId: string,
   params?: { limit?: number; before?: string },
 ): Promise<MessagesResponse> {
-  const qs = new URLSearchParams();
-  if (params?.limit) qs.set('limit', String(params.limit));
-  if (params?.before) qs.set('before', params.before);
-  const queryStr = qs.toString();
-  return apiRequest<MessagesResponse>(
-    `/conversations/${conversationId}/messages${queryStr ? `?${queryStr}` : ''}`,
+  const { data } = await axiosInstance.get<MessagesResponse>(
+    `/conversations/${conversationId}/messages`,
+    { params }
   );
+  return data;
 }
 
 export async function sendMessage(
   conversationId: string,
   text: string,
 ): Promise<IMessage> {
-  return apiRequest<IMessage>('/messages', {
-    method: 'POST',
-    body: JSON.stringify({ conversationId, text }),
+  const { data } = await axiosInstance.post<IMessage>('/messages', {
+    conversationId,
+    text,
   });
+  return data;
 }
 
 // --- Groups ---
@@ -124,54 +85,53 @@ export async function createGroup(
   name: string,
   participantIds: string[],
 ): Promise<IGroupConversation> {
-  return apiRequest<IGroupConversation>('/conversations/group', {
-    method: 'POST',
-    body: JSON.stringify({ name, participantIds }),
+  const { data } = await axiosInstance.post<IGroupConversation>('/conversations/group', {
+    name,
+    participantIds,
   });
+  return data;
 }
 
 export async function addGroupMembers(
   groupId: string,
   userIds: string[],
 ): Promise<IGroupConversation> {
-  return apiRequest<IGroupConversation>(
+  const { data } = await axiosInstance.post<IGroupConversation>(
     `/conversations/${groupId}/participants`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ userIds }),
-    },
+    { userIds }
   );
+  return data;
 }
 
 export async function removeGroupMember(
   groupId: string,
   userId: string,
 ): Promise<IGroupConversation> {
-  return apiRequest<IGroupConversation>(
-    `/conversations/${groupId}/participants/${userId}`,
-    { method: 'DELETE' },
+  const { data } = await axiosInstance.delete<IGroupConversation>(
+    `/conversations/${groupId}/participants/${userId}`
   );
+  return data;
 }
 
 export async function promoteAdmin(
   groupId: string,
   userId: string,
 ): Promise<IGroupConversation> {
-  return apiRequest<IGroupConversation>(
+  const { data } = await axiosInstance.post<IGroupConversation>(
     `/conversations/${groupId}/admins`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ userId }),
-    },
+    { userId }
   );
+  return data;
 }
 
 export async function renameGroup(
   groupId: string,
   name: string,
 ): Promise<IGroupConversation> {
-  return apiRequest<IGroupConversation>(`/conversations/${groupId}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ name }),
-  });
+  const { data } = await axiosInstance.patch<IGroupConversation>(
+    `/conversations/${groupId}`,
+    { name }
+  );
+  return data;
 }
+
