@@ -96,6 +96,7 @@
     --chat-bubble-in: 210 20% 96%;
     --chat-bubble-in-fg: 222 22% 11%;
     --radius: 0.75rem;
+    --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
   }
 
   .dark {
@@ -141,6 +142,7 @@
 
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 }
 
@@ -151,5 +153,30 @@
 
   .section-py {
     @apply py-12;
+  }
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

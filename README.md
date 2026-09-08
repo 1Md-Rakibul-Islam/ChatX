@@ -4,9 +4,10 @@ A real-time 1-to-1 and group chat application with a polished, creative landing 
 
 ## Live Demo
 
-- **Landing Page:** `/` — the creative showcase
-- **Login/Regester Page:** `/login` — the login/regerster page
-- **Chat Application:** `/chat` — the implemented chat experience
+- **Landing Page:** https://chatx-weld.vercel.app/
+- **Login Page:** https://chatx-weld.vercel.app/login
+- **Chat Application:** https://chatx-weld.vercel.app/chat
+- **API Documentation:** https://github.com/1Md-Rakibul-Islam/ChatX/tree/main/docs/API-DOCUMENTATION.md
 
 ## Getting Started Local Server
 
